@@ -1,2 +1,3 @@
-# uhoo-homeassistant
-uHoo consumer integration for homeassistant
+# uHoo for Home Assistant
+
+## Installation

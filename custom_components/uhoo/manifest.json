@@ -1,0 +1,9 @@
+{
+  "codeowners": ["@csacca"],
+  "config_flow": false,
+  "dependencies": [],
+  "documentation": "https://github.com/csacca/uhoo-homeassistant",
+  "domain": "uhoo",
+  "name": "uHoo",
+  "requirements": []
+}
