@@ -22,6 +22,8 @@ PLATFORMS = ["sensor"]
 
 async def async_setup(hass: HomeAssistant, config: Config) -> bool:
     """Set up uHoo integration."""
+    hass.data[DOMAIN] = {DATA_COORDINATOR: {}}
+
     return True
 
 
