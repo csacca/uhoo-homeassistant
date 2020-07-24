@@ -1,7 +1,6 @@
 """The uHoo Component"""
 
 from asyncio import gather
-from datetime import datetime, timedelta, timezone
 
 import async_timeout
 from pyuhoo import Client
@@ -16,6 +15,9 @@ from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .const import DATA_COORDINATOR, DOMAIN, LOGGER, UPDATE_INTERVAL
+
+# from datetime import datetime, timedelta, timezone
+
 
 PLATFORMS = ["sensor"]
 
@@ -81,9 +83,10 @@ class UhooEntity(Entity):
     @property
     def available(self):
         """Return if sensor is available."""
-        device = self.coordinator.data[self.serial_number]
-        is_fresh = (datetime.now(timezone.utc) - device.timestamp) < timedelta(minutes=5)
-        return self.coordinator.last_update_success and is_fresh
+        # device = self.coordinator.data[self.serial_number]
+        # is_fresh = (datetime.now(timezone.utc) - device.timestamp) < timedelta(minutes=5)
+        # return self.coordinator.last_update_success and is_fresh
+        return self.coordinator.last_update_success
 
     @property
     def should_poll(self) -> bool:
