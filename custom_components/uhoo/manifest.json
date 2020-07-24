@@ -8,6 +8,6 @@
   "domain": "uhoo",
   "name": "uHoo",
   "requirements": [
-    "pyuhoo==0.0.1"
+    "pyuhoo==0.0.2"
   ]
 }
