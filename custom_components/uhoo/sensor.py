@@ -1,4 +1,4 @@
-from homeassistant.const import ATTR_ATTRIBUTION, ATTR_DEVICE_CLASS, TEMP_CELSIUS, TEMP_FAHRENHEIT
+from homeassistant.const import ATTR_DEVICE_CLASS, TEMP_CELSIUS, TEMP_FAHRENHEIT
 from homeassistant.helpers.entity import Entity
 
 from . import UhooEntity
@@ -8,7 +8,6 @@ from .const import (
     ATTR_LABEL,
     ATTR_UNIQUE_ID,
     ATTR_UNIT,
-    ATTRIBUTION,
     DATA_COORDINATOR,
     DOMAIN,
     SENSOR_TYPES,
@@ -67,8 +66,3 @@ class UhooSensor(UhooEntity, Entity):
     def unique_id(self):
         """Return a unique id."""
         return f"{self.serial_number}-{SENSOR_TYPES[self.sensor_type][ATTR_UNIQUE_ID]}"
-
-    @property
-    def device_state_attributes(self):
-        """Return device attributes."""
-        return {ATTR_ATTRIBUTION: ATTRIBUTION}
