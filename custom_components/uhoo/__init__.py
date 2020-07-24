@@ -1,7 +1,7 @@
 """The uHoo Component"""
 
 from asyncio import gather
-from datetime import now, timedelta, timezone
+from datetime import datetime, timedelta, timezone
 
 import async_timeout
 from pyuhoo import Client
@@ -80,7 +80,7 @@ class UhooEntity(Entity):
     def available(self):
         """Return if sensor is available."""
         device = self.coordinator.data[self.serial_number]
-        is_fresh = (now(timezone.utc) - device.timestamp) < timedelta(minutes=5)
+        is_fresh = (datetime.now(timezone.utc) - device.timestamp) < timedelta(minutes=5)
         return self.coordinator.last_update_success and is_fresh
 
     @property
