@@ -10,7 +10,7 @@ from homeassistant.const import (
     DEVICE_CLASS_TEMPERATURE,
     PRESSURE_HPA,
     TEMP_FAHRENHEIT,
-    UNIT_PERCENTAGE,
+    PERCENTAGE,
 )
 
 API_CO = "co"
@@ -61,7 +61,7 @@ SENSOR_TYPES = {
     API_HUMIDITY: {
         ATTR_DEVICE_CLASS: DEVICE_CLASS_HUMIDITY,
         ATTR_ICON: "mdi:water-percent",
-        ATTR_UNIT: UNIT_PERCENTAGE,
+        ATTR_UNIT: PERCENTAGE,
         ATTR_LABEL: "Humidity",
         ATTR_UNIQUE_ID: API_HUMIDITY,
     },
