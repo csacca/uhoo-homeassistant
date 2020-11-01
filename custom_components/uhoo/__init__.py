@@ -14,7 +14,7 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .const import DATA_COORDINATOR, DOMAIN, LOGGER, UPDATE_INTERVAL
+from .const import DATA_COORDINATOR, DOMAIN, LOGGER, UPDATE_INTERVAL, CONF_NAMED_AS_SERIAL
 
 # from datetime import datetime, timedelta, timezone
 
@@ -48,6 +48,24 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
 
     return True
 
+async def async_migrate_entry(hass, config_entry: ConfigEntry):
+    """Migrate old entry."""
+    _LOGGER.debug("Migrating from version %s", config_entry.version)
+
+    if config_entry.version == 1:
+
+        new = {**config_entry.data}
+        
+        if CONF_NAMED_AS_SERIAL not in new:
+            new[CONF_NAMED_AS_SERIAL] = True
+        
+        config_entry.data = {**new}
+
+        config_entry.version = 2
+
+    _LOGGER.info("Migration to version %s successful", config_entry.version)
+
+    return True
 
 async def async_unload_entry(hass: HomeAssistant, config_entry: ConfigEntry):
     """Unload a uHoo config entry."""
@@ -70,15 +88,23 @@ class UhooEntity(Entity):
 
     def __init__(self, coordinator, serial_number, sensor_type):
         """Initialize uHoo sensor."""
-        self._unique_id = f"{serial_number}-{sensor_type}"
         self.coordinator = coordinator
         self.serial_number = serial_number
         self.sensor_type = sensor_type
 
+        named_by_serial = coordinator.entry.data.get(CONF_NAMED_AS_SERIAL, True)
+        if named_by_serial:
+            self._uid = f"uHoo {serial_number}"
+            self._unique_id = serial_number
+        else:
+            self._uid = coordinator.data[serial_number].name
+
+            self._unique_id = self._uid
+
     @property
     def unique_id(self):
         """Return a unique id."""
-        return self._unique_id
+        return f"{self._unique_id}-{sensor_type}"
 
     @property
     def available(self):

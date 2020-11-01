@@ -8,7 +8,7 @@ from homeassistant.config_entries import CONN_CLASS_CLOUD_POLL, ConfigFlow
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
-from .const import DOMAIN
+from .const import DOMAIN, CONF_NAMED_AS_SERIAL
 
 
 class UhooFlowHandler(ConfigFlow, domain=DOMAIN):
@@ -19,9 +19,11 @@ class UhooFlowHandler(ConfigFlow, domain=DOMAIN):
 
     def __init__(self):
         """Initialize the config flow."""
-        self.data_schema = vol.Schema(
-            {vol.Required(CONF_USERNAME): str, vol.Required(CONF_PASSWORD): str}
-        )
+        self.data_schema = vol.Schema({
+            vol.Required(CONF_USERNAME): str, 
+            vol.Required(CONF_PASSWORD): str,
+            vol.Optional(CONF_NAMED_AS_SERIAL, False): bool,
+        })
 
     async def _show_form(self, errors=None):
         """Show the form to the user."""

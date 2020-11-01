@@ -29,6 +29,7 @@ ATTR_UNIT = "unit"
 ATTR_UNIQUE_ID = "unique_id"
 
 DATA_COORDINATOR = "coordinator"
+CONF_NAMED_AS_SERIAL = "Named as serial"
 
 DOMAIN = "uhoo"
 

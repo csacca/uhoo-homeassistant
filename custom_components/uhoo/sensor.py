@@ -32,7 +32,7 @@ class UhooSensor(UhooEntity, Entity):
     @property
     def name(self):
         """Return the name of the particular component."""
-        return f"uHoo {self.serial_number} {SENSOR_TYPES[self.sensor_type][ATTR_LABEL]}"
+        return f"{self._uid} {SENSOR_TYPES[self.sensor_type][ATTR_LABEL]}"
 
     @property
     def state(self):
@@ -65,4 +65,4 @@ class UhooSensor(UhooEntity, Entity):
     @property
     def unique_id(self):
         """Return a unique id."""
-        return f"{self.serial_number}-{SENSOR_TYPES[self.sensor_type][ATTR_UNIQUE_ID]}"
+        return f"{self._unique_id}-{SENSOR_TYPES[self.sensor_type][ATTR_UNIQUE_ID]}"
