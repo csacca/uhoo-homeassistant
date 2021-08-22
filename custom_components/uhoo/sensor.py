@@ -39,6 +39,8 @@ class UhooSensor(UhooEntity, Entity):
         """State of the sensor."""
         device = self.coordinator.data[self.serial_number]
         state = getattr(device, self.sensor_type)
+        if isinstance(state, list):
+            state=state[0]
         return state
 
     @property

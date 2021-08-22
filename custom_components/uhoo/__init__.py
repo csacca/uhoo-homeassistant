@@ -124,7 +124,7 @@ class UhooDataUpdateCoordinator(DataUpdateCoordinator):
         await self.client.login()
 
     async def _async_update_data(self):
-        """Get curent data from uHoo API"""
+        """Get current data from uHoo API"""
         with async_timeout.timeout(10):
             try:
                 await self.client.get_latest_data()

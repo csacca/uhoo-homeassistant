@@ -4,8 +4,8 @@
             "user": {
                 "title": "Configure uHoo",
                 "data": {
-                    "username": "[%key:common::config_flow::data::email%]",
-                    "password": "[%key:common::config_flow::data::password%]"
+                    "username": "Email / Username",
+                    "password": "Password"
                 }
             }
         },
