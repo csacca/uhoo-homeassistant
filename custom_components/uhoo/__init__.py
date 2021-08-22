@@ -95,7 +95,9 @@ class UhooEntity(Entity):
 
     async def async_added_to_hass(self) -> None:
         """Connect to dispatcher listening for entity data notifications."""
-        self.async_on_remove(self.coordinator.async_add_listener(self.async_write_ha_state))
+        self.async_on_remove(
+            self.coordinator.async_add_listener(self.async_write_ha_state)
+        )
 
     async def async_update(self) -> None:
         """Request an update of the coordinator for entity."""
@@ -118,7 +120,9 @@ class UhooDataUpdateCoordinator(DataUpdateCoordinator):
         self.entry = config_entry
         self.user_settings_temp = None
 
-        super().__init__(hass, LOGGER, name=config_entry.title, update_interval=UPDATE_INTERVAL)
+        super().__init__(
+            hass, LOGGER, name=config_entry.title, update_interval=UPDATE_INTERVAL
+        )
 
     async def login(self):
         await self.client.login()

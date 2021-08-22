@@ -40,7 +40,7 @@ class UhooSensor(UhooEntity, Entity):
         device = self.coordinator.data[self.serial_number]
         state = getattr(device, self.sensor_type)
         if isinstance(state, list):
-            state=state[0]
+            state = state[0]
         return state
 
     @property

@@ -11,13 +11,14 @@ _Component to integrate with [uHoo][uhoo-homeassistant]._
 
 **This component will set up the following platforms.**
 
-Platform | Description
--- | --
-`sensor` | Show info from API.
+| Platform | Description         |
+| -------- | ------------------- |
+| `sensor` | Show info from API. |
 
 ![uHoo][logoimg]
 
 {% if not installed %}
+
 ## Installation
 
 1. Click install.
@@ -25,12 +26,11 @@ Platform | Description
 
 {% endif %}
 
-
 ## Configuration is done in the UI
 
 <!---->
 
-***
+---
 
 [uhoo-homeassistant]: https://github.com/csacca/uhoo-homeassistant
 [commits-shield]: https://img.shields.io/github/commit-activity/y/custom-components/integration_blueprint.svg?style=for-the-badge

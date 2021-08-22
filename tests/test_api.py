@@ -2,9 +2,9 @@
 import asyncio
 
 import aiohttp
-from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from custom_components.integration_blueprint.api import IntegrationBlueprintApiClient
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 
 async def test_api(hass, aioclient_mock, caplog):
