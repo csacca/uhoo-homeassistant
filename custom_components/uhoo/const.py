@@ -13,6 +13,16 @@ from homeassistant.const import (
     TEMP_FAHRENHEIT,
 )
 
+# Base component constants
+NAME = "uHoo Integration"
+DOMAIN = "uhoo"
+VERSION = "0.0.3"
+ISSUE_URL = "https://github.com/csacca/uhoo-homeassistant/issues"
+
+# Platforms
+SENSOR = "sensor"
+PLATFORMS = [SENSOR]
+
 API_CO = "co"
 API_CO2 = "co2"
 API_DUST = "dust"
@@ -28,9 +38,6 @@ ATTR_LABEL = "label"
 ATTR_UNIT = "unit"
 ATTR_UNIQUE_ID = "unique_id"
 
-DATA_COORDINATOR = "coordinator"
-
-DOMAIN = "uhoo"
 
 LOGGER = logging.getLogger(__package__)
 
@@ -101,3 +108,14 @@ SENSOR_TYPES = {
         ATTR_UNIQUE_ID: API_VOC,
     },
 }
+
+
+STARTUP_MESSAGE = f"""
+-------------------------------------------------------------------
+{NAME}
+Version: {VERSION}
+This is a custom integration!
+If you have any issues with this you need to open an issue here:
+{ISSUE_URL}
+-------------------------------------------------------------------
+"""

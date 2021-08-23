@@ -1,12 +1,15 @@
 {
   "editor.formatOnSave": true,
   "python.formatting.provider": "black",
-  "python.sortImports.args": ["--profile", "black"],
+  "python.sortImports.args": [
+    "--profile",
+    "black"
+  ],
   "editor.codeActionsOnSave": {
     "source.organizeImports": true
   },
   "python.linting.enabled": true,
-  "python.pythonPath": "/usr/local/bin/python",
+  "python.linting.flake8Enabled": true,
   "files.associations": {
     "*.yaml": "home-assistant"
   },
@@ -18,5 +21,4 @@
     "master",
     "uhoo"
   ],
-  "python.linting.flake8Enabled": true
 }

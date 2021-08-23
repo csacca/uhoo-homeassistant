@@ -1,38 +1,75 @@
-from homeassistant.const import ATTR_DEVICE_CLASS, TEMP_CELSIUS, TEMP_FAHRENHEIT
-from homeassistant.helpers.entity import Entity
+"""UhooSensorEntity class"""
 
-from . import UhooEntity
+from custom_components.uhoo import UhooDataUpdateCoordinator
+from homeassistant.components.sensor import SensorEntity
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.typing import ConfigType
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
+
 from .const import (
     API_TEMP,
+    ATTR_DEVICE_CLASS,
     ATTR_ICON,
     ATTR_LABEL,
     ATTR_UNIQUE_ID,
     ATTR_UNIT,
-    DATA_COORDINATOR,
     DOMAIN,
+    NAME,
     SENSOR_TYPES,
+    TEMP_CELSIUS,
+    TEMP_FAHRENHEIT,
 )
 
 
-async def async_setup_entry(hass, config_entry, async_add_entities):
-    """Defer sensor setup to the shared sensor module."""
-    coordinator = hass.data[DOMAIN][DATA_COORDINATOR][config_entry.entry_id]
+async def async_setup_entry(
+    hass: HomeAssistant,
+    config_entry: ConfigType,
+    async_add_entities: AddEntitiesCallback,
+):
+    """Setup sensor platform."""
+    coordinator = hass.data[DOMAIN][config_entry.entry_id]
 
     sensors_list = []
     for serial_number in coordinator.data:
         for sensor in SENSOR_TYPES:
-            sensors_list.append(UhooSensor(coordinator, serial_number, sensor))
+            sensors_list.append(UhooSensorEntity(sensor, serial_number, coordinator))
 
-    async_add_entities(sensors_list, False)
+    async_add_entities(sensors_list)
 
 
-class UhooSensor(UhooEntity, Entity):
-    """Sensor representing poolsense data."""
+class UhooSensorEntity(CoordinatorEntity, SensorEntity):
+    """uHoo Sensor Entity"""
+
+    def __init__(
+        self, kind: str, serial_number: str, coordinator: UhooDataUpdateCoordinator
+    ):
+        super().__init__(coordinator)
+        self._kind = kind
+        self._serial_number = serial_number
 
     @property
     def name(self):
         """Return the name of the particular component."""
-        return f"uHoo {self.serial_number} {SENSOR_TYPES[self.sensor_type][ATTR_LABEL]}"
+        return (
+            f"uHoo {self._serial_number} {SENSOR_TYPES[self.sensor_type][ATTR_LABEL]}"
+        )
+
+    @property
+    def unique_id(self):
+        """Return a unique ID to use for this entity."""
+        return f"{self._serial_number}_{SENSOR_TYPES[self.sensor_type][ATTR_UNIQUE_ID]}"
+
+    @property
+    def device_info(self):
+        # we probably could pull the firmware version if we wanted
+        # its in the api somewhere
+        return {
+            "identifiers": {(DOMAIN, self._serial_number)},
+            "name": NAME,
+            "model": NAME,
+            "manufacturer": NAME,
+        }
 
     @property
     def state(self):
@@ -63,8 +100,3 @@ class UhooSensor(UhooEntity, Entity):
                 return TEMP_CELSIUS
         else:
             return SENSOR_TYPES[self.sensor_type][ATTR_UNIT]
-
-    @property
-    def unique_id(self):
-        """Return a unique id."""
-        return f"{self.serial_number}-{SENSOR_TYPES[self.sensor_type][ATTR_UNIQUE_ID]}"

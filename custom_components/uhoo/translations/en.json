@@ -10,10 +10,10 @@
       }
     },
     "error": {
-      "invalid_credentials": "Invalid uHoo credentials provided."
+      "auth": "Invalid uHoo credentials provided."
     },
     "abort": {
-      "already_configured": "This uHoo account is already registered."
+      "single_instance_allowed": "Only a single instance is allowed."
     }
   }
 }

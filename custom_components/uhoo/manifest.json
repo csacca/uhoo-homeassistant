@@ -6,6 +6,10 @@
   "issue_tracker": "https://github.com/csacca/uhoo-homeassistant/issues",
   "version": "0.0.2",
   "config_flow": true,
-  "codeowners": ["@csacca"],
-  "requirements": ["pyuhoo==0.0.2"]
+  "codeowners": [
+    "@csacca"
+  ],
+  "requirements": [
+    "pyuhoo==0.0.3"
+  ]
 }
