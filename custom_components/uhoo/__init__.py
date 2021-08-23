@@ -40,10 +40,9 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
     password = config_entry.data.get(CONF_PASSWORD)
 
     session = async_get_clientsession(hass)
-    client = Client(username, password, session, debug=True)
 
     try:
-        client = Client(username, password, session, debug=True)
+        client = Client(username, password, session)
         await client.login()
     except UnauthorizedError as err:
         LOGGER.error(
