@@ -6,10 +6,11 @@ https://github.com/csacca/uhoo-homeassistant
 """
 
 import asyncio
-from typing import Dict
+from typing import Dict, List
 
 from pyuhoo import Client
 from pyuhoo.device import Device
+from pyuhoo.errors import UnauthorizedError
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
@@ -41,6 +42,14 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
     session = async_get_clientsession(hass)
     client = Client(username, password, session, debug=True)
 
+    try:
+        client = Client(username, password, session, debug=True)
+        await client.login()
+    except UnauthorizedError as err:
+        LOGGER.error(
+            f"Error: received a 401 Unauthorized error attempting to login:\n{err}"
+        )
+
     coordinator = UhooDataUpdateCoordinator(hass, client=client)
     await coordinator.async_refresh()
 
@@ -66,7 +75,7 @@ class UhooDataUpdateCoordinator(DataUpdateCoordinator):
     def __init__(self, hass: HomeAssistant, client: Client) -> None:
         """Initialize."""
         self.client = client
-        self.platforms = []
+        self.platforms: List[str] = []
         self.user_settings_temp = None
 
         super().__init__(hass, LOGGER, name=DOMAIN, update_interval=UPDATE_INTERVAL)
@@ -77,6 +86,9 @@ class UhooDataUpdateCoordinator(DataUpdateCoordinator):
             self.user_settings_temp = self.client.user_settings_temp
             return self.client.get_devices()
         except Exception as exception:
+            LOGGER.error(
+                f"Error: an exception occurred while attempting to get latest data:\n{exception}"
+            )
             raise UpdateFailed() from exception
 
 

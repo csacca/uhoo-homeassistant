@@ -14,7 +14,7 @@ from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import callback
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
 
-from .const import DOMAIN, PLATFORMS
+from .const import DOMAIN, LOGGER, PLATFORMS
 
 
 class UhooFlowHandler(ConfigFlow, domain=DOMAIN):  # type: ignore[call-arg]
@@ -86,10 +86,12 @@ class UhooFlowHandler(ConfigFlow, domain=DOMAIN):  # type: ignore[call-arg]
             client = Client(username, password, session)
             await client.login()
             return True
-        except UnauthorizedError:
-            pass
-        except Exception:
-            pass
+        except UnauthorizedError as err:
+            LOGGER.error(
+                f"Error: received a 401 Unauthorized error attempting to login:\n{err}"
+            )
+        except Exception as err:
+            LOGGER.error(f"Error: exception while attempting to login:\n{err}")
         return False
 
 

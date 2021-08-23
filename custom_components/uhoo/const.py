@@ -1,7 +1,7 @@
 from datetime import timedelta
 import logging
 
-from homeassistant.const import (
+from homeassistant.const import (  # noqa:F401
     ATTR_DEVICE_CLASS,
     CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
     CONCENTRATION_PARTS_PER_BILLION,
@@ -10,11 +10,14 @@ from homeassistant.const import (
     DEVICE_CLASS_TEMPERATURE,
     PERCENTAGE,
     PRESSURE_HPA,
+    TEMP_CELSIUS,
     TEMP_FAHRENHEIT,
 )
 
 # Base component constants
 NAME = "uHoo Integration"
+MODEL = "uHoo Indoor Air Monitor"
+MANUFACTURER = "uHoo"
 DOMAIN = "uhoo"
 VERSION = "0.0.3"
 ISSUE_URL = "https://github.com/csacca/uhoo-homeassistant/issues"

@@ -867,7 +867,7 @@ python-versions = "*"
 
 [[package]]
 name = "pyuhoo"
-version = "0.0.3"
+version = "0.0.4"
 description = "Python API for talking to uHoo consumer API"
 category = "main"
 optional = false
@@ -1176,7 +1176,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "dff83c7384d6a73595636d23d9517358cd3f082c8345c4a4fe6436f0d963e485"
+content-hash = "fa43ae61f2f49b606ca4acb1266776ae5cd9b7162149a67b159a74e92faf2b89"
 
 [metadata.files]
 aiohttp = [
@@ -1839,8 +1839,8 @@ pytz = [
     {file = "pytz-2021.1.tar.gz", hash = "sha256:83a4a90894bf38e243cf052c8b58f381bfe9a7a483f6a9cab140bc7f702ac4da"},
 ]
 pyuhoo = [
-    {file = "pyuhoo-0.0.3-py3-none-any.whl", hash = "sha256:e8eb1c2b5bf187d1a0e6b9046f0c890f89bdf5d81269e85ae407a46ed0bc10b3"},
-    {file = "pyuhoo-0.0.3.tar.gz", hash = "sha256:80099ed6bbb97362b8a60c9997cdd129dab6218502394fea3418c1b2cbf9ea93"},
+    {file = "pyuhoo-0.0.4-py3-none-any.whl", hash = "sha256:f1c2639f9e5a6e2307e3d655119a157d84d263a670fbe555fd1eccca946bd1f8"},
+    {file = "pyuhoo-0.0.4.tar.gz", hash = "sha256:0275ba4a2c113fbabe707b95c321160cbb170d55dc549cc01580e50f62fe56be"},
 ]
 pyyaml = [
     {file = "PyYAML-5.4.1-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:3b2b1824fe7112845700f815ff6a489360226a5609b96ec2190a45e62a9fc922"},

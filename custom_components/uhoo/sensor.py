@@ -1,5 +1,7 @@
 """UhooSensorEntity class"""
 
+from pyuhoo.device import Device
+
 from custom_components.uhoo import UhooDataUpdateCoordinator
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.core import HomeAssistant
@@ -15,7 +17,8 @@ from .const import (
     ATTR_UNIQUE_ID,
     ATTR_UNIT,
     DOMAIN,
-    NAME,
+    MANUFACTURER,
+    MODEL,
     SENSOR_TYPES,
     TEMP_CELSIUS,
     TEMP_FAHRENHEIT,
@@ -45,37 +48,38 @@ class UhooSensorEntity(CoordinatorEntity, SensorEntity):
         self, kind: str, serial_number: str, coordinator: UhooDataUpdateCoordinator
     ):
         super().__init__(coordinator)
+        self._coordinator = coordinator
         self._kind = kind
         self._serial_number = serial_number
 
     @property
     def name(self):
         """Return the name of the particular component."""
-        return (
-            f"uHoo {self._serial_number} {SENSOR_TYPES[self.sensor_type][ATTR_LABEL]}"
-        )
+        device: Device = self.coordinator.data[self._serial_number]
+        return f"uHoo {device.name} {SENSOR_TYPES[self._kind][ATTR_LABEL]}"
 
     @property
     def unique_id(self):
         """Return a unique ID to use for this entity."""
-        return f"{self._serial_number}_{SENSOR_TYPES[self.sensor_type][ATTR_UNIQUE_ID]}"
+        return f"{self._serial_number}_{SENSOR_TYPES[self._kind][ATTR_UNIQUE_ID]}"
 
     @property
     def device_info(self):
         # we probably could pull the firmware version if we wanted
         # its in the api somewhere
+        device: Device = self.coordinator.data[self._serial_number]
         return {
             "identifiers": {(DOMAIN, self._serial_number)},
-            "name": NAME,
-            "model": NAME,
-            "manufacturer": NAME,
+            "name": device.name,
+            "model": MODEL,
+            "manufacturer": MANUFACTURER,
         }
 
     @property
     def state(self):
         """State of the sensor."""
-        device = self.coordinator.data[self.serial_number]
-        state = getattr(device, self.sensor_type)
+        device: Device = self._coordinator.data[self._serial_number]
+        state = getattr(device, self._kind)
         if isinstance(state, list):
             state = state[0]
         return state
@@ -83,20 +87,20 @@ class UhooSensorEntity(CoordinatorEntity, SensorEntity):
     @property
     def device_class(self):
         """Return the device class."""
-        return SENSOR_TYPES[self.sensor_type][ATTR_DEVICE_CLASS]
+        return SENSOR_TYPES[self._kind][ATTR_DEVICE_CLASS]
 
     @property
     def icon(self):
         """Return the icon."""
-        return SENSOR_TYPES[self.sensor_type][ATTR_ICON]
+        return SENSOR_TYPES[self._kind][ATTR_ICON]
 
     @property
     def unit_of_measurement(self):
         """Return unit of measurement."""
-        if self.sensor_type == API_TEMP:
-            if self.coordinator.user_settings_temp == "f":
+        if self._kind == API_TEMP:
+            if self._coordinator.user_settings_temp == "f":
                 return TEMP_FAHRENHEIT
             else:
                 return TEMP_CELSIUS
         else:
-            return SENSOR_TYPES[self.sensor_type][ATTR_UNIT]
+            return SENSOR_TYPES[self._kind][ATTR_UNIT]
