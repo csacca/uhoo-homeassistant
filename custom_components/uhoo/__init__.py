@@ -91,25 +91,43 @@ class UhooDataUpdateCoordinator(DataUpdateCoordinator):
             raise UpdateFailed() from exception
 
 
-async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+async def async_unload_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
     """Handle removal of an entry."""
-    coordinator = hass.data[DOMAIN][entry.entry_id]
+    coordinator = hass.data[DOMAIN][config_entry.entry_id]
     unloaded = all(
         await asyncio.gather(
             *[
-                hass.config_entries.async_forward_entry_unload(entry, platform)
+                hass.config_entries.async_forward_entry_unload(config_entry, platform)
                 for platform in PLATFORMS
                 if platform in coordinator.platforms
             ]
         )
     )
     if unloaded:
-        hass.data[DOMAIN].pop(entry.entry_id)
+        hass.data[DOMAIN].pop(config_entry.entry_id)
 
     return unloaded
 
 
-async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
+async def async_reload_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> None:
     """Reload config entry."""
-    await async_unload_entry(hass, entry)
-    await async_setup_entry(hass, entry)
+    await async_unload_entry(hass, config_entry)
+    await async_setup_entry(hass, config_entry)
+
+
+async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry):
+    """Migrate old entry."""
+    LOGGER.debug("Migrating from version %s", config_entry.version)
+
+    if config_entry.version == 1:
+        dev_reg = await hass.helpers.device_registry.async_get_registry()
+        dev_reg.async_clear_config_entry(config_entry)
+
+        en_reg = await hass.helpers.entity_registry.async_get_registry()
+        en_reg.async_clear_config_entry(config_entry)
+
+        config_entry.version = 2
+        hass.config_entries.async_update_entry(config_entry)
+
+    LOGGER.info("Migration to version %s successful", config_entry.version)
+    return True
