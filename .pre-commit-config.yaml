@@ -56,3 +56,7 @@ repos:
     rev: v0.910
     hooks:
       - id: mypy
+        args:
+          - --pretty
+          - --ignore-missing-imports
+          - --warn-return-any
