@@ -1,22 +1,12 @@
-"""Global fixtures for integration_blueprint integration."""
-# Fixtures allow you to replace functions with a Mock object. You can perform
-# many options via the Mock to reflect a particular behavior from the original
-# function that you want to see without going through the function's actual logic.
-# Fixtures can either be passed into tests as parameters, or if autouse=True, they
-# will automatically be used across all tests.
-#
-# Fixtures that are defined in conftest.py are available across all tests. You can also
-# define fixtures within a particular test file to scope them locally.
-#
-# pytest_homeassistant_custom_component provides some fixtures that are provided by
-# Home Assistant core. You can find those fixture definitions here:
-# https://github.com/MatthewFlamm/pytest-homeassistant-custom-component/blob/master/pytest_homeassistant_custom_component/common.py
-#
-# See here for more info: https://docs.pytest.org/en/latest/fixture.html (note that
-# pytest includes fixtures OOB which you can use as defined on this page)
+"""Global fixtures for uHoo integration."""
+
 from unittest.mock import patch
 
 import pytest
+from pyuhoo.device import Device
+from pyuhoo.errors import UnauthorizedError
+
+from .const import MOCK_DEVICE, MOCK_DEVICE_DATA
 
 pytest_plugins = "pytest_homeassistant_custom_component"
 
@@ -40,24 +30,39 @@ def skip_notifications_fixture():
         yield
 
 
-# This fixture, when used, will result in calls to async_get_data to return None. To have the call
-# return a value, we would add the `return_value=<VALUE_TO_RETURN>` parameter to the patch call.
-@pytest.fixture(name="bypass_get_data")
-def bypass_get_data_fixture():
-    """Skip calls to get data from API."""
-    with patch(
-        "custom_components.integration_blueprint.IntegrationBlueprintApiClient.async_get_data"
-    ):
+@pytest.fixture(name="bypass_async_setup_entry")
+def bypass_async_setup_entry_fixture():
+    with patch("custom_components.uhoo.async_setup_entry", return_value=True):
         yield
 
 
-# In this fixture, we are forcing calls to async_get_data to raise an Exception. This is useful
-# for exception handling.
-@pytest.fixture(name="error_on_get_data")
-def error_get_data_fixture():
-    """Simulate error when retrieving data from API."""
-    with patch(
-        "custom_components.integration_blueprint.IntegrationBlueprintApiClient.async_get_data",
-        side_effect=Exception,
-    ):
+@pytest.fixture(name="mock_device")
+def mock_device_fixture() -> Device:
+    device = Device(MOCK_DEVICE)
+    device.update_data(MOCK_DEVICE_DATA)
+    return device
+
+
+@pytest.fixture(name="bypass_login")
+def bypass_login_fixture():
+    with patch("custom_components.uhoo.Client.login"):
+        yield
+
+
+@pytest.fixture(name="error_on_login")
+def error_login_fixture():
+    with patch("custom_components.uhoo.Client.login", side_effect=UnauthorizedError):
+        yield
+
+
+@pytest.fixture(name="bypass_get_latest_data")
+def bypass_get_lastest_data_fixture():
+    with patch("custom_components.uhoo.Client.get_latest_data"):
+        yield
+
+
+@pytest.fixture(name="bypass_get_devices")
+def bypass_get_devices_fixture(mock_device):
+    devices = {mock_device.serial_number: mock_device}
+    with patch("custom_components.uhoo.Client.get_devices", return_value=devices):
         yield
