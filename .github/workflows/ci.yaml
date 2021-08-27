@@ -1,0 +1,78 @@
+---
+name: CI
+
+# yamllint disable-line rule:truthy
+on:
+  push:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: "ubuntu-latest"
+    name: Validate
+    steps:
+      - uses: "actions/checkout@v2"
+
+      - name: HACS validation
+        uses: "hacs/action@main"
+        with:
+          category: "integration"
+
+      - name: Hassfest validation
+        uses: "home-assistant/actions/hassfest@master"
+
+  tests:
+    name: Python ${{matrix.python-version}} on ${{matrix.os}}
+    runs-on: ${{matrix.os}}
+
+    strategy:
+      matrix:
+        python-version: [3.9]
+        os: [ubuntu-latest]
+      fail-fast: true
+
+    steps:
+      - name: ⤵️ Check out code from GitHub
+        uses: actions/checkout@v2
+
+      - name: 🏗 Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: 📝 Get full Python version
+        id: full-python-version
+        shell: bash
+        run: echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info))")
+
+      - name: 🏗 Install poetry
+        uses: abatilo/actions-poetry@v2.1.2
+        with:
+          poetry-version: 1.1.8
+
+      - name: 🔧 Set up cache
+        uses: actions/cache@v2
+        id: cache
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
+
+      - name: 🔧 Ensure cache is healthy
+        if: steps.cache.outputs.cache-hit == 'true'
+        shell: bash
+        run: timeout 10s poetry run pip --version || rm -rf .venv
+
+      - name: 🏗 Install dependencies
+        shell: bash
+        run: poetry install
+
+      - name: ✅ Run pytest
+        shell: bash
+        run: |
+          poetry run \
+            python -m pytest -qq --durations=10 -n auto -p no:sugar
