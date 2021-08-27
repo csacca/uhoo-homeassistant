@@ -4,21 +4,18 @@ Custom integration to integrate uHoo with Home Assistant.
 For more details about this integration, please refer to
 https://github.com/csacca/uhoo-homeassistant
 """
-
 import asyncio
 from typing import Dict, List
 
 from pyuhoo import Client
 from pyuhoo.device import Device
-from pyuhoo.errors import UnauthorizedError
+from pyuhoo.errors import UhooError, UnauthorizedError
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import Config, HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
-
-# from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .const import DOMAIN, LOGGER, PLATFORMS, STARTUP_MESSAGE, UPDATE_INTERVAL
@@ -36,19 +33,24 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
         hass.data.setdefault(DOMAIN, {})
         LOGGER.info(STARTUP_MESSAGE)
 
+    # get username and password from configuration
     username = config_entry.data.get(CONF_USERNAME)
     password = config_entry.data.get(CONF_PASSWORD)
 
+    # get aiohttp session
     session = async_get_clientsession(hass)
 
+    # initial login
     try:
         client = Client(username, password, session)
         await client.login()
     except UnauthorizedError as err:
-        LOGGER.error(
-            f"Error: received a 401 Unauthorized error attempting to login:\n{err}"
-        )
+        LOGGER.error(f"Error: 401 Unauthorized error while logging in: {err}")
+        return False
+    except UhooError as err:
+        raise ConfigEntryNotReady(err) from err
 
+    # create data update coordinator
     coordinator = UhooDataUpdateCoordinator(hass, client=client)
     await coordinator.async_refresh()
 
@@ -57,14 +59,9 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
 
     hass.data[DOMAIN][config_entry.entry_id] = coordinator
 
-    for platform in PLATFORMS:
-        if config_entry.options.get(platform, True):
-            coordinator.platforms.append(platform)
-            hass.async_add_job(
-                hass.config_entries.async_forward_entry_setup(config_entry, platform)
-            )
+    # Set up all platforms for this device/entry.
+    hass.config_entries.async_setup_platforms(config_entry, PLATFORMS)
 
-    config_entry.add_update_listener(async_reload_entry)
     return True
 
 
@@ -83,51 +80,31 @@ class UhooDataUpdateCoordinator(DataUpdateCoordinator):
         try:
             await self.client.get_latest_data()
             self.user_settings_temp = self.client.user_settings_temp
-            return self.client.get_devices()
+            return self.client.get_devices()  # type: ignore
         except Exception as exception:
             LOGGER.error(
-                f"Error: an exception occurred while attempting to get latest data:\n{exception}"
+                f"Error: an exception occurred while attempting to get latest data: {exception}"
             )
             raise UpdateFailed() from exception
 
 
 async def async_unload_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
     """Handle removal of an entry."""
+
     coordinator = hass.data[DOMAIN][config_entry.entry_id]
     unloaded = all(
         await asyncio.gather(
-            *[
+            *(
                 hass.config_entries.async_forward_entry_unload(config_entry, platform)
                 for platform in PLATFORMS
                 if platform in coordinator.platforms
-            ]
+            )
         )
     )
+
+    await hass.async_block_till_done()
+
     if unloaded:
         hass.data[DOMAIN].pop(config_entry.entry_id)
 
     return unloaded
-
-
-async def async_reload_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> None:
-    """Reload config entry."""
-    await async_unload_entry(hass, config_entry)
-    await async_setup_entry(hass, config_entry)
-
-
-async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry):
-    """Migrate old entry."""
-    LOGGER.debug("Migrating from version %s", config_entry.version)
-
-    if config_entry.version == 1:
-        dev_reg = await hass.helpers.device_registry.async_get_registry()
-        dev_reg.async_clear_config_entry(config_entry)
-
-        en_reg = await hass.helpers.entity_registry.async_get_registry()
-        en_reg.async_clear_config_entry(config_entry)
-
-        config_entry.version = 2
-        hass.config_entries.async_update_entry(config_entry)
-
-    LOGGER.info("Migration to version %s successful", config_entry.version)
-    return True

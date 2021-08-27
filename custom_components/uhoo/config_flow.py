@@ -20,7 +20,8 @@ from .const import DOMAIN, LOGGER, PLATFORMS
 class UhooFlowHandler(ConfigFlow, domain=DOMAIN):  # type: ignore[call-arg]
     """Handle a config flow for uHoo."""
 
-    VERSION = 2
+    # VERSION = 2
+    VERSION = 1
     CONNECTION_CLASS = CONN_CLASS_CLOUD_POLL
 
     def __init__(self):

@@ -3,7 +3,7 @@
 from pyuhoo.device import Device
 
 from custom_components.uhoo import UhooDataUpdateCoordinator
-from homeassistant.components.sensor import SensorEntity
+from homeassistant.components.sensor import STATE_CLASS_MEASUREMENT, SensorEntity
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import ConfigType
@@ -15,7 +15,7 @@ from .const import (
     ATTR_ICON,
     ATTR_LABEL,
     ATTR_UNIQUE_ID,
-    ATTR_UNIT,
+    ATTR_UNIT_OF_MEASUREMENT,
     DOMAIN,
     MANUFACTURER,
     MODEL,
@@ -33,12 +33,12 @@ async def async_setup_entry(
     """Setup sensor platform."""
     coordinator = hass.data[DOMAIN][config_entry.entry_id]
 
-    sensors_list = []
+    sensors = []
     for serial_number in coordinator.data:
         for sensor in SENSOR_TYPES:
-            sensors_list.append(UhooSensorEntity(sensor, serial_number, coordinator))
+            sensors.append(UhooSensorEntity(sensor, serial_number, coordinator))
 
-    async_add_entities(sensors_list)
+    async_add_entities(sensors, False)
 
 
 class UhooSensorEntity(CoordinatorEntity, SensorEntity):
@@ -76,6 +76,11 @@ class UhooSensorEntity(CoordinatorEntity, SensorEntity):
         }
 
     @property
+    def device_class(self):
+        """Return the device class."""
+        return SENSOR_TYPES[self._kind][ATTR_DEVICE_CLASS]
+
+    @property
     def state(self):
         """State of the sensor."""
         device: Device = self._coordinator.data[self._serial_number]
@@ -85,22 +90,22 @@ class UhooSensorEntity(CoordinatorEntity, SensorEntity):
         return state
 
     @property
-    def device_class(self):
-        """Return the device class."""
-        return SENSOR_TYPES[self._kind][ATTR_DEVICE_CLASS]
+    def state_class(self) -> str:
+        """Return the state class of this entity, from STATE_CLASSES, if any."""
+        return str(STATE_CLASS_MEASUREMENT)
 
     @property
-    def icon(self):
+    def icon(self) -> str:
         """Return the icon."""
-        return SENSOR_TYPES[self._kind][ATTR_ICON]
+        return str(SENSOR_TYPES[self._kind][ATTR_ICON])
 
     @property
-    def unit_of_measurement(self):
+    def unit_of_measurement(self) -> str:
         """Return unit of measurement."""
         if self._kind == API_TEMP:
             if self._coordinator.user_settings_temp == "f":
-                return TEMP_FAHRENHEIT
+                return str(TEMP_FAHRENHEIT)
             else:
-                return TEMP_CELSIUS
+                return str(TEMP_CELSIUS)
         else:
-            return SENSOR_TYPES[self._kind][ATTR_UNIT]
+            return str(SENSOR_TYPES[self._kind][ATTR_UNIT_OF_MEASUREMENT])
