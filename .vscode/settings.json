@@ -1,13 +1,10 @@
 {
   "editor.formatOnSave": true,
   "python.formatting.provider": "black",
-  "python.sortImports.args": [
-    "--profile",
-    "black"
-  ],
+  "python.sortImports.args": ["--profile", "black"],
   "editor.codeActionsOnSave": {
     "source.organizeImports": true
   },
   "python.linting.enabled": true,
-  "python.linting.flake8Enabled": true,
+  "python.linting.flake8Enabled": true
 }
