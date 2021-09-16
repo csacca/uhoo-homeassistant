@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "uhoo-homeassistant"
-version = "0.0.3"
+version = "0.0.4"
 description = "uHoo integration for Home Assistant"
 authors = ["Christopher Sacca <csacca@csacca.net>"]
 repository = "https://github.com/csacca/uhoo-homeassistant"
