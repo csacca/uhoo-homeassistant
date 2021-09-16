@@ -7,5 +7,5 @@
   "version": "0.0.3",
   "config_flow": true,
   "codeowners": ["@csacca"],
-  "requirements": ["pyuhoo==0.0.4"]
+  "requirements": ["pyuhoo==0.0.5"]
 }
