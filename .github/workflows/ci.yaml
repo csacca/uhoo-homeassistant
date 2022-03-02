@@ -16,7 +16,7 @@ jobs:
     runs-on: "ubuntu-latest"
     name: Validate
     steps:
-      - uses: "actions/checkout@v2"
+      - uses: "actions/checkout@v3"
 
       - name: HACS validation
         uses: "hacs/action@main"
@@ -38,7 +38,7 @@ jobs:
 
     steps:
       - name: ⤵️ Check out code from GitHub
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: 🏗 Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
