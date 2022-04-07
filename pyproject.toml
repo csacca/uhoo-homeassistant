@@ -21,7 +21,7 @@ pre-commit = "^2.15.0"
 pytest = "^6.2.4"
 pytest-homeassistant-custom-component = "^0.4.3"
 flake8-docstrings = "^1.6.0"
-pylint = "^2.11.1"
+pylint = "^2.13.5"
 pydocstyle = "^6.1.1"
 
 [tool.isort]
